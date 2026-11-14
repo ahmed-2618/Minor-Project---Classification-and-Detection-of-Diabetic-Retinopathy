@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diabetic retinopathy grading</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="page">
+    <section class="intake">
+      <h1>Grade a retinal photo for diabetic retinopathy</h1>
+      <p class="lede">Upload one fundus image. The model returns a severity grade from 0 to 4 and how confident it is in each grade.</p>
+
+      <input type="file" id="file" accept="image/png,image/jpeg" hidden>
+      <button type="button" class="lens" id="lens" aria-label="Choose a fundus image to upload">
+        <img id="preview" alt="" hidden>
+        <span class="lens-hint" id="hint">
+          <strong>Drop an image here</strong>
+          <span>or press to browse. PNG or JPG, up to 16 MB.</span>
+        </span>
+        <span class="lens-busy" id="busy" hidden>Analysing</span>
+      </button>
+
+      <div class="actions">
+        <button type="button" class="primary" id="run" disabled>Grade this image</button>
+        <button type="button" class="ghost" id="reset" hidden>Choose another</button>
+      </div>
+      <p class="error" id="error" role="alert" hidden></p>
+    </section>
+
+    <section class="outcome" id="outcome" aria-live="polite">
+      <div class="empty" id="empty">
+        <p>The grade appears here after you upload an image.</p>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <p class="result-label">Predicted grade</p>
+        <p class="result-grade"><span id="gradeNum"></span> <span id="gradeName"></span></p>
+
+        <ol class="ladder" id="ladder">
+          <li data-g="0">No DR</li>
+          <li data-g="1">Mild</li>
+          <li data-g="2">Moderate</li>
+          <li data-g="3">Severe</li>
+          <li data-g="4">Proliferative</li>
+        </ol>
+
+        <h2>Confidence by grade</h2>
+        <ul class="bars" id="bars"></ul>
+      </div>
+
+      <p class="notice">
+        This is a student research model, not a medical device, and it does not replace an eye examination.
+        It always returns one of the five grades, even for an image that is not a retinal photo.
+        Mild, Severe and Proliferative are its weakest grades.
+      </p>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

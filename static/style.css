@@ -1,0 +1,130 @@
+:root {
+  --paper: #eef2f4;
+  --ink: #15232b;
+  --muted: #55646c;
+  --line: #cfd8dd;
+  --lens: #0c1114;
+  --accent: #1f6f8b;
+  --g0: #3c8d7b;
+  --g1: #b8a33a;
+  --g2: #d9922e;
+  --g3: #cf5b33;
+  --g4: #a3243b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.55;
+}
+
+.page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 56px 28px 72px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+
+h1 {
+  font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  line-height: 1.1;
+  margin: 0 0 16px;
+  max-width: 14em;
+}
+
+.lede { margin: 0 0 32px; color: var(--muted); max-width: 34em; }
+
+/* the lens: the one memorable element */
+.lens {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 380px);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lens);
+  color: #d6dde1;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 0 0 10px var(--paper), 0 0 0 11px var(--line);
+  font: inherit;
+}
+.lens:focus-visible { outline: 3px solid var(--accent); outline-offset: 14px; }
+.lens.drag { box-shadow: 0 0 0 10px var(--paper), 0 0 0 13px var(--accent); }
+.lens img { width: 100%; height: 100%; object-fit: cover; }
+.lens-hint { display: grid; gap: 6px; padding: 0 22%; text-align: center; font-size: .92rem; }
+.lens-hint strong { font-weight: 600; font-size: 1.05rem; color: #fff; }
+.lens-busy {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: rgba(12, 17, 20, .72); color: #fff; font-weight: 500;
+}
+
+.actions { display: flex; gap: 12px; margin-top: 36px; }
+button.primary, button.ghost {
+  font: inherit; font-weight: 500; padding: 11px 22px; border-radius: 8px; cursor: pointer;
+}
+button.primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); }
+button.primary:disabled { background: #b9c6cc; border-color: #b9c6cc; cursor: not-allowed; }
+button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+.error { color: #a3243b; margin: 14px 0 0; font-weight: 500; }
+
+/* result side */
+.outcome { padding-top: 8px; }
+.empty p { color: var(--muted); margin: 0 0 40px; }
+
+.result-label { margin: 0; color: var(--muted); font-size: .9rem; }
+.result-grade {
+  margin: 4px 0 28px;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 1.05;
+}
+#gradeNum { color: var(--grade, var(--accent)); margin-right: .15em; }
+
+.ladder {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+  list-style: none; margin: 0 0 36px; padding: 0; font-size: .78rem;
+}
+.ladder li {
+  padding: 8px 4px 0; text-align: center; color: var(--muted);
+  border-top: 5px solid var(--line);
+}
+.ladder li[data-g="0"] { --c: var(--g0); }
+.ladder li[data-g="1"] { --c: var(--g1); }
+.ladder li[data-g="2"] { --c: var(--g2); }
+.ladder li[data-g="3"] { --c: var(--g3); }
+.ladder li[data-g="4"] { --c: var(--g4); }
+.ladder li.on { border-top-color: var(--c); color: var(--ink); font-weight: 600; }
+
+.result h2 { font-size: 1rem; font-weight: 600; margin: 0 0 14px; }
+.bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.bars li { display: grid; grid-template-columns: 7.5em 1fr 3.4em; gap: 12px; align-items: center; font-size: .92rem; }
+.bars .track { height: 10px; background: #dde4e8; border-radius: 5px; overflow: hidden; }
+.bars .fill { height: 100%; width: 0; background: var(--c); border-radius: 5px; transition: width .6s ease; }
+.bars .pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.bars li.top .pct { color: var(--ink); font-weight: 600; }
+
+.notice { margin: 44px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .86rem; max-width: 36em; }
+
+@media (max-width: 820px) {
+  .page { grid-template-columns: 1fr; gap: 40px; padding-top: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bars .fill { transition: none; }
+}
+
+[hidden] { display: none !important; }
+.bars .fill { display: block; }

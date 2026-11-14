@@ -121,6 +121,29 @@ def predict_image(img_rgb):
     return int(probs.argmax()), probs.tolist()
 
 
+
+# ---------- simple "is this a fundus photo?" gate ----------
+# Retinal photos have dark corners (black background) and are strongly red/orange.
+# Thresholds are starting values; calibrate them on your own images (see notebook cell).
+CORNER_MAX = float(os.environ.get('CORNER_MAX', 40))        # mean gray of the 4 corners, 0-255
+RED_RATIO_MIN = float(os.environ.get('RED_RATIO_MIN', 1.8))  # mean red / mean blue
+
+
+def fundus_stats(img_rgb):
+    small = cv2.resize(img_rgb, (128, 128), interpolation=cv2.INTER_AREA)
+    gray = cv2.cvtColor(small, cv2.COLOR_RGB2GRAY)
+    k = 12
+    corners = np.concatenate([gray[:k, :k].ravel(), gray[:k, -k:].ravel(),
+                              gray[-k:, :k].ravel(), gray[-k:, -k:].ravel()])
+    corner_mean = float(corners.mean())
+    red_ratio = float((small[:, :, 0].mean() + 1) / (small[:, :, 2].mean() + 1))
+    return corner_mean, red_ratio
+
+
+def looks_like_fundus(img_rgb):
+    corner_mean, red_ratio = fundus_stats(img_rgb)
+    return corner_mean < CORNER_MAX and red_ratio > RED_RATIO_MIN
+
 # ---------- routes ----------
 @app.route('/')
 def index():
@@ -143,6 +166,10 @@ def predict():
         return jsonify(error='That file could not be read as an image.'), 400
 
     img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+
+    if not looks_like_fundus(img_rgb):
+        return jsonify(error='This does not look like a retinal fundus photo, so it was not graded.'), 422
+
     idx, probs = predict_image(img_rgb)
 
     return jsonify(
